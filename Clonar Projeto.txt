@@ -1,4 +1,0 @@
-git clone https://github.com/Danilo-RC/PAM.git
-cd PAM\Projeto-Inter
-npm install
-npx expo start
