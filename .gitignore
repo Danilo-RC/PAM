@@ -1,0 +1,56 @@
+# Dependencies
+# ----------------------------------------------------------------
+# Node dependencies
+/node_modules
+/app/node_modules
+
+# Composer dependencies
+/api/vendor
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# Build & temporary files
+# ----------------------------------------------------------------
+# React Native / Expo
+/app/build
+/app/.expo/
+/app/web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# Laravel
+/api/storage/framework/
+/api/storage/logs/
+/api/storage/app/public/
+/api/bootstrap/cache/
+/api/public/hot
+/api/public/storage
+
+# OS-specific files
+# ----------------------------------------------------------------
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+
+# Editor & IDE folders
+# ----------------------------------------------------------------
+.vscode/
+.idea/
+
+
+# Environment files (IMPORTANT FOR SECURITY)
+# ----------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+/api/.env
+/app/.env

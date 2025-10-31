@@ -1,0 +1,23 @@
+{
+  "name": "banco-inter",
+  "version": "1.0.0",
+  "description": "Este é um projeto de estudos full stack que simula funcionalidades básicas do aplicativo do Banco Inter, desenvolvido com um frontend em **React Native (Expo)** e um backend em **PHP (Laravel)**.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@prettier/plugin-php": "^0.24.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.6",
+    "prettier": "^3.6.2"
+  },
+  "lint-staged": {
+    "app/**/*.{js,jsx,ts,tsx}": "prettier --write",
+    "api/**/*.{php,blade.php}": "prettier --write"
+  }
+}

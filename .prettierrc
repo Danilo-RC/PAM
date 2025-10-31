@@ -1,0 +1,16 @@
+{
+  "singleQuote": true,
+  "trailingComma": "all",
+  "arrowParens": "avoid",
+  "tabWidth": 2,
+  "semi": true,
+  "plugins": ["@prettier/plugin-php"],
+  "overrides": [
+    {
+      "files": "api/**/*.php",
+      "options": {
+        "tabWidth": 4
+      }
+    }
+  ]
+}
