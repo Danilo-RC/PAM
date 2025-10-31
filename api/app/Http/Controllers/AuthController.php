@@ -18,28 +18,34 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Dados inválidos',
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Dados inválidos',
+                    'errors' => $validator->errors(),
+                ],
+                422,
+            );
         }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'saldo' => 0.00,
+            'saldo' => 0.0,
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Usuário criado com sucesso',
-            'user' => $user,
-            'token' => $token
-        ], 201);
+        return response()->json(
+            [
+                'success' => true,
+                'message' => 'Usuário criado com sucesso',
+                'user' => $user,
+                'token' => $token,
+            ],
+            201,
+        );
     }
 
     public function login(Request $request)
@@ -50,20 +56,26 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Dados inválidos',
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Dados inválidos',
+                    'errors' => $validator->errors(),
+                ],
+                422,
+            );
         }
 
         $user = User::where('email', $request->email)->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Email ou senha inválidos'
-            ], 401);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Email ou senha inválidos',
+                ],
+                401,
+            );
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -72,7 +84,7 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'Login realizado com sucesso',
             'user' => $user,
-            'token' => $token
+            'token' => $token,
         ]);
     }
 
@@ -82,7 +94,7 @@ class AuthController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Logout realizado com sucesso'
+            'message' => 'Logout realizado com sucesso',
         ]);
     }
 }

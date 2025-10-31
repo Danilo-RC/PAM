@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,55 +6,55 @@ import {
   Pressable,
   Alert,
   ActivityIndicator,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import api from "../../api";
-import styles from "./style";
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../../api';
+import styles from './style';
 
 export default function Login() {
   const navigation = useNavigation();
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !senha) {
-      Alert.alert("Erro", "Preencha todos os campos.");
+      Alert.alert('Erro', 'Preencha todos os campos.');
       return;
     }
 
     setLoading(true);
 
     try {
-      const response = await api.post("/login", {
+      const response = await api.post('/login', {
         email: email,
         password: senha,
       });
 
       if (response.status === 200) {
         // Salva o token no AsyncStorage
-        await AsyncStorage.setItem("userToken", response.data.token);
+        await AsyncStorage.setItem('userToken', response.data.token);
 
-        Alert.alert("Sucesso", "Login realizado com sucesso!");
+        Alert.alert('Sucesso', 'Login realizado com sucesso!');
 
         // Navega para Home com dados do usuário
-        navigation.replace("Home", {
+        navigation.replace('Home', {
           user: response.data.user,
         });
       }
     } catch (error) {
-      console.error("Erro no login:", error.response?.data || error);
+      console.error('Erro no login:', error.response?.data || error);
 
-      let errorMessage = "Erro no login. Tente novamente.";
+      let errorMessage = 'Erro no login. Tente novamente.';
 
       if (error.response?.status === 401) {
-        errorMessage = "Email ou senha incorretos.";
+        errorMessage = 'Email ou senha incorretos.';
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       }
 
-      Alert.alert("Erro", errorMessage);
+      Alert.alert('Erro', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -98,7 +98,7 @@ export default function Login() {
       </Pressable>
 
       <Pressable
-        onPress={() => navigation.navigate("Cadastro")}
+        onPress={() => navigation.navigate('Cadastro')}
         disabled={loading}
       >
         <Text style={styles.registerLink}>Criar uma conta</Text>

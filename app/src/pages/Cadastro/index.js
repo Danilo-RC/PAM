@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,49 +7,49 @@ import {
   Alert,
   ActivityIndicator,
   ScrollView,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import api from "../../api";
-import styles from "./style";
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import api from '../../api';
+import styles from './style';
 
 export default function Cadastro() {
   const navigation = useNavigation();
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [senha, setSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
   const [loading, setLoading] = useState(false);
 
   const validarCampos = () => {
     if (!nome.trim()) {
-      Alert.alert("Erro", "Digite seu nome completo.");
+      Alert.alert('Erro', 'Digite seu nome completo.');
       return false;
     }
 
     if (!email.trim()) {
-      Alert.alert("Erro", "Digite seu email.");
+      Alert.alert('Erro', 'Digite seu email.');
       return false;
     }
 
     // Validação básica de email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert("Erro", "Digite um email válido.");
+      Alert.alert('Erro', 'Digite um email válido.');
       return false;
     }
 
     if (!senha) {
-      Alert.alert("Erro", "Digite uma senha.");
+      Alert.alert('Erro', 'Digite uma senha.');
       return false;
     }
 
     if (senha.length < 6) {
-      Alert.alert("Erro", "A senha deve ter pelo menos 6 caracteres.");
+      Alert.alert('Erro', 'A senha deve ter pelo menos 6 caracteres.');
       return false;
     }
 
     if (senha !== confirmarSenha) {
-      Alert.alert("Erro", "As senhas não coincidem.");
+      Alert.alert('Erro', 'As senhas não coincidem.');
       return false;
     }
 
@@ -64,7 +64,7 @@ export default function Cadastro() {
     setLoading(true);
 
     try {
-      const response = await api.post("/register", {
+      const response = await api.post('/register', {
         name: nome.trim(),
         email: email.trim().toLowerCase(),
         password: senha,
@@ -72,35 +72,35 @@ export default function Cadastro() {
 
       if (response.status === 201) {
         Alert.alert(
-          "Sucesso",
-          "Conta criada com sucesso! Faça login para continuar."
+          'Sucesso',
+          'Conta criada com sucesso! Faça login para continuar.',
         );
 
         setTimeout(() => {
           navigation.reset({
             index: 0,
-            routes: [{ name: "Login" }],
+            routes: [{ name: 'Login' }],
           });
         }, 500);
       }
     } catch (error) {
-      console.error("Erro no cadastro:", error.response?.data || error);
+      console.error('Erro no cadastro:', error.response?.data || error);
 
-      let errorMessage = "Erro ao criar conta. Tente novamente.";
+      let errorMessage = 'Erro ao criar conta. Tente novamente.';
 
       if (error.response?.status === 422) {
         // Erro de validação
         const errors = error.response.data.errors;
         if (errors?.email) {
-          errorMessage = "Este email já está em uso.";
+          errorMessage = 'Este email já está em uso.';
         } else if (errors?.password) {
-          errorMessage = "A senha deve ter pelo menos 6 caracteres.";
+          errorMessage = 'A senha deve ter pelo menos 6 caracteres.';
         }
       } else if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       }
 
-      Alert.alert("Erro", errorMessage);
+      Alert.alert('Erro', errorMessage);
     } finally {
       setLoading(false);
     }

@@ -11,10 +11,10 @@ class UserController extends Controller
     public function show(Request $request)
     {
         $user = $request->user();
-        
+
         return response()->json([
             'success' => true,
-            'user' => $user
+            'user' => $user,
         ]);
     }
 
@@ -25,32 +25,38 @@ class UserController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Arquivo inválido',
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Arquivo inválido',
+                    'errors' => $validator->errors(),
+                ],
+                422,
+            );
         }
 
         $user = $request->user();
 
         // Remove a foto anterior se existir
-        if ($user->foto_perfil && Storage::exists('public/' . $user->foto_perfil)) {
+        if (
+            $user->foto_perfil &&
+            Storage::exists('public/' . $user->foto_perfil)
+        ) {
             Storage::delete('public/' . $user->foto_perfil);
         }
 
         // Salva a nova foto
         $path = $request->file('photo')->store('fotos_perfil', 'public');
-        
+
         // Atualiza o usuário
         $user->update([
-            'foto_perfil' => $path
+            'foto_perfil' => $path,
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Foto atualizada com sucesso',
-            'user' => $user
+            'user' => $user,
         ]);
     }
 }

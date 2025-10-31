@@ -25,13 +25,16 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     // Autenticação
     Route::post('/logout', [AuthController::class, 'logout']);
-    
+
     // Usuário
     Route::get('/user', [UserController::class, 'show']);
     Route::post('/profile/photo', [UserController::class, 'updatePhoto']);
-    
+
     // Transações
     Route::get('/transactions', [TransactionController::class, 'index']);
     Route::post('/transactions', [TransactionController::class, 'store']);
-    Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
+    Route::delete('/transactions/{id}', [
+        TransactionController::class,
+        'destroy',
+    ]);
 });

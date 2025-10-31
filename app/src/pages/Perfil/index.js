@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,12 +8,12 @@ import {
   Image,
   ScrollView,
   Platform,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as ImagePicker from "expo-image-picker";
-import api from "../../api";
-import styles from "./style";
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as ImagePicker from 'expo-image-picker';
+import api from '../../api';
+import styles from './style';
 
 export default function Perfil() {
   const navigation = useNavigation();
@@ -24,19 +24,19 @@ export default function Perfil() {
   // Carrega os dados do usuário
   const loadUserData = async () => {
     try {
-      const response = await api.get("/user");
+      const response = await api.get('/user');
       if (response.status === 200) {
         const userData = response.data.user || response.data;
         setUser(userData);
       }
     } catch (error) {
-      console.error("Erro ao carregar dados do usuário:", error);
+      console.error('Erro ao carregar dados do usuário:', error);
 
       if (error.response?.status === 401) {
-        await AsyncStorage.removeItem("userToken");
-        navigation.replace("Login");
+        await AsyncStorage.removeItem('userToken');
+        navigation.replace('Login');
       } else {
-        Alert.alert("Erro", "Não foi possível carregar os dados do perfil.");
+        Alert.alert('Erro', 'Não foi possível carregar os dados do perfil.');
       }
     } finally {
       setLoading(false);
@@ -45,15 +45,15 @@ export default function Perfil() {
 
   // Pedir as permissões
   const requestPermissions = async () => {
-    if (Platform.OS === "web") return true; // web não precisa de permissão
+    if (Platform.OS === 'web') return true; // web não precisa de permissão
 
     const camera = await ImagePicker.requestCameraPermissionsAsync();
     const gallery = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-    if (camera.status !== "granted" || gallery.status !== "granted") {
+    if (camera.status !== 'granted' || gallery.status !== 'granted') {
       Alert.alert(
-        "Permissão negada",
-        "É necessário permitir acesso à câmera e galeria."
+        'Permissão negada',
+        'É necessário permitir acesso à câmera e galeria.',
       );
       return false;
     }
@@ -62,8 +62,8 @@ export default function Perfil() {
 
   // Tirar a foto
   const takePhoto = async () => {
-    if (Platform.OS === "web") {
-      Alert.alert("Indisponível", "Câmera não funciona na web.");
+    if (Platform.OS === 'web') {
+      Alert.alert('Indisponível', 'Câmera não funciona na web.');
       return;
     }
 
@@ -84,11 +84,11 @@ export default function Perfil() {
 
   // Escolher da galeria
   const pickFromGallery = async () => {
-    if (Platform.OS === "web") {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.onchange = async (e) => {
+    if (Platform.OS === 'web') {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.onchange = async e => {
         const file = e.target.files[0];
         if (!file) return;
         const uri = URL.createObjectURL(file);
@@ -114,37 +114,37 @@ export default function Perfil() {
   };
 
   // Upload das foto
-  const uploadPhoto = async (uri) => {
+  const uploadPhoto = async uri => {
     setUploadingPhoto(true);
     try {
       const formData = new FormData();
 
       // Para web, precisa transformar em File mó chato isso
-      if (Platform.OS === "web") {
+      if (Platform.OS === 'web') {
         const response = await fetch(uri);
         const blob = await response.blob();
-        const file = new File([blob], "photo.jpg", { type: blob.type });
-        formData.append("photo", file);
+        const file = new File([blob], 'photo.jpg', { type: blob.type });
+        formData.append('photo', file);
       } else {
-        const filename = uri.split("/").pop();
+        const filename = uri.split('/').pop();
         const match = /\.(\w+)$/.exec(filename);
-        const type = match ? `image/${match[1]}` : "image/jpeg";
-        formData.append("photo", { uri, type, name: filename });
+        const type = match ? `image/${match[1]}` : 'image/jpeg';
+        formData.append('photo', { uri, type, name: filename });
       }
 
-      const response = await api.post("/profile/photo", formData, {
+      const response = await api.post('/profile/photo', formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       });
 
       if (response.status === 200) {
-        Alert.alert("Sucesso", "Foto atualizada com sucesso!");
+        Alert.alert('Sucesso', 'Foto atualizada com sucesso!');
         await loadUserData();
       }
     } catch (error) {
-      console.error("Erro ao fazer upload da foto:", error);
-      Alert.alert("Erro", "Não foi possível atualizar a foto.");
+      console.error('Erro ao fazer upload da foto:', error);
+      Alert.alert('Erro', 'Não foi possível atualizar a foto.');
     } finally {
       setUploadingPhoto(false);
     }
@@ -152,19 +152,19 @@ export default function Perfil() {
 
   // Logout
   const handleLogout = () => {
-    Alert.alert("Sair da Conta", "Tem certeza que deseja sair?", [
-      { text: "Cancelar", style: "cancel" },
+    Alert.alert('Sair da Conta', 'Tem certeza que deseja sair?', [
+      { text: 'Cancelar', style: 'cancel' },
       {
-        text: "Sair",
-        style: "destructive",
+        text: 'Sair',
+        style: 'destructive',
         onPress: async () => {
           try {
-            await api.post("/logout");
+            await api.post('/logout');
           } catch (error) {
-            console.error("Erro no logout:", error);
+            console.error('Erro no logout:', error);
           } finally {
-            await AsyncStorage.removeItem("userToken");
-            navigation.replace("Login");
+            await AsyncStorage.removeItem('userToken');
+            navigation.replace('Login');
           }
         },
       },
@@ -172,10 +172,10 @@ export default function Perfil() {
   };
 
   // Formata o valor como moeda
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
+  const formatCurrency = value => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
     }).format(value || 0);
   };
 
@@ -211,7 +211,7 @@ export default function Perfil() {
         {user?.foto_perfil ? (
           <Image
             source={{
-              uri: `${api.defaults.baseURL.replace("/api", "")}/storage/${
+              uri: `${api.defaults.baseURL.replace('/api', '')}/storage/${
                 user.foto_perfil
               }`,
             }}
@@ -252,12 +252,12 @@ export default function Perfil() {
       <View style={styles.infoContainer}>
         <View style={styles.infoItem}>
           <Text style={styles.infoLabel}>Nome:</Text>
-          <Text style={styles.infoValue}>{user?.name || "Não informado"}</Text>
+          <Text style={styles.infoValue}>{user?.name || 'Não informado'}</Text>
         </View>
 
         <View style={styles.infoItem}>
           <Text style={styles.infoLabel}>Email:</Text>
-          <Text style={styles.infoValue}>{user?.email || "Não informado"}</Text>
+          <Text style={styles.infoValue}>{user?.email || 'Não informado'}</Text>
         </View>
 
         <View style={styles.infoItem}>
@@ -270,7 +270,7 @@ export default function Perfil() {
       <View style={styles.logoutContainer}>
         <Pressable
           style={styles.logoutButton}
-          onPress={() => navigation.navigate("Login")}
+          onPress={() => navigation.navigate('Login')}
         >
           <Text style={styles.logoutButtonText}>Sair da Conta</Text>
         </Pressable>

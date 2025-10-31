@@ -11,8 +11,8 @@ class Transaction extends Model
 
     protected $fillable = [
         'user_id',
-        'tipo',    // 'entrada' ou 'saida'
-        'valor',   // float
+        'tipo', // 'entrada' ou 'saida'
+        'valor', // float
         'descricao',
     ];
 

@@ -12,11 +12,14 @@ class TransactionController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        $transactions = $user->transactions()->orderBy('created_at', 'desc')->get();
+        $transactions = $user
+            ->transactions()
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return response()->json([
             'success' => true,
-            'transactions' => $transactions
+            'transactions' => $transactions,
         ]);
     }
 
@@ -29,11 +32,14 @@ class TransactionController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Dados inválidos',
-                'errors' => $validator->errors()
-            ], 422);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Dados inválidos',
+                    'errors' => $validator->errors(),
+                ],
+                422,
+            );
         }
 
         $user = $request->user();
@@ -50,29 +56,35 @@ class TransactionController extends Controller
                 'descricao' => $request->description,
             ]);
 
-            $user->saldo = $request->type === 'entrada'
-                ? $user->saldo + $amount
-                : $user->saldo - $amount;
+            $user->saldo =
+                $request->type === 'entrada'
+                    ? $user->saldo + $amount
+                    : $user->saldo - $amount;
 
             $user->save();
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Transação criada com sucesso',
-                'transaction' => $transaction,
-                'saldo_atual' => $user->saldo
-            ], 201);
-
+            return response()->json(
+                [
+                    'success' => true,
+                    'message' => 'Transação criada com sucesso',
+                    'transaction' => $transaction,
+                    'saldo_atual' => $user->saldo,
+                ],
+                201,
+            );
         } catch (\Exception $e) {
             DB::rollback();
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao criar transação',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Erro ao criar transação',
+                    'error' => $e->getMessage(),
+                ],
+                500,
+            );
         }
     }
 
@@ -80,14 +92,17 @@ class TransactionController extends Controller
     {
         $user = $request->user();
         $transaction = Transaction::where('id', $id)
-                                  ->where('user_id', $user->id)
-                                  ->first();
+            ->where('user_id', $user->id)
+            ->first();
 
         if (!$transaction) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Transação não encontrada'
-            ], 404);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Transação não encontrada',
+                ],
+                404,
+            );
         }
 
         DB::beginTransaction();
@@ -95,9 +110,10 @@ class TransactionController extends Controller
         try {
             $valor = (float) $transaction->valor;
 
-            $user->saldo = $transaction->tipo === 'entrada'
-                ? $user->saldo - $valor
-                : $user->saldo + $valor;
+            $user->saldo =
+                $transaction->tipo === 'entrada'
+                    ? $user->saldo - $valor
+                    : $user->saldo + $valor;
 
             $user->save();
 
@@ -108,17 +124,19 @@ class TransactionController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Transação removida com sucesso',
-                'saldo_atual' => $user->saldo
+                'saldo_atual' => $user->saldo,
             ]);
-
         } catch (\Exception $e) {
             DB::rollback();
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Erro ao remover transação',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(
+                [
+                    'success' => false,
+                    'message' => 'Erro ao remover transação',
+                    'error' => $e->getMessage(),
+                ],
+                500,
+            );
         }
     }
 }
