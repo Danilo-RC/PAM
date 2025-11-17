@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
-import 'react-native-web'; // Importação para garantir compatibilidade web
+
 import { View, Text, StyleSheet } from 'react-native';
 
 import LoginScreen from './src/pages/Login';
