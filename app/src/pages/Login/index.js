@@ -39,7 +39,7 @@ export default function Login() {
         Alert.alert('Sucesso', 'Login realizado com sucesso!');
 
         // Navega para Home com dados do usuário
-        navigation.replace('Home', {
+        navigation.replace('Main', {
           user: response.data.user,
         });
       }
