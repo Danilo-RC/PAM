@@ -13,17 +13,31 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyAU2Xkp45blLBoaPkY_CRtrYn8ew2NlnSg"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAU2Xkp45blLBoaPkY_CRtrYn8ew2NlnSg"
+        }
+      },
+      "package": "com.daniloviquis.bancointerapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "635c5177-236f-4e3c-b38d-e6eac42e7ae2"
+      }
     }
   }
 }

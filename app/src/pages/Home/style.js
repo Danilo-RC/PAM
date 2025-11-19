@@ -36,17 +36,7 @@ const styles = StyleSheet.create({
     opacity: 0.9,
     marginTop: 2,
   },
-  profileButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  profileButtonText: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
+
   balanceContainer: {
     backgroundColor: '#fff',
     margin: 20,

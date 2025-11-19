@@ -178,12 +178,6 @@ export default function Home({ route }) {
           </Text>
           <Text style={styles.subtitle}>Bem-vindo ao Banco Inter</Text>
         </View>
-        <Pressable
-          style={styles.profileButton}
-          onPress={() => navigation.navigate('Perfil')}
-        >
-          <Text style={styles.profileButtonText}>Perfil</Text>
-        </Pressable>
       </View>
 
       {/* Saldo */}
