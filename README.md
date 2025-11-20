@@ -138,10 +138,10 @@ npx eas build:configure
 npx eas build --platform android --profile development
 ```
 
-#### Build de Produção:
+#### Build para APK:
 ```bash
 cd app
-npx eas build --platform android --profile production
+npx eas build --platform android --profile apk
 ```
 
 #### Instalar o Build:
