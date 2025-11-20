@@ -54,3 +54,7 @@ ehthumbs.db
 
 /api/.env
 /app/.env
+
+# Android local configuration
+# ----------------------------------------------------------------
+/android/local.properties
