@@ -20,8 +20,19 @@ export default function Perfil() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [baseURL, setBaseURL] = useState('');
 
-  // Carrega os dados do usuário
+  const loadApiUrl = async () => {
+    try {
+      const savedUrl = await AsyncStorage.getItem('url_api');
+      if (savedUrl) {
+        setBaseURL(savedUrl);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar URL da API:', error);
+    }
+  };
+
   const loadUserData = async () => {
     try {
       const response = await api.get('/user');
@@ -43,9 +54,8 @@ export default function Perfil() {
     }
   };
 
-  // Pedir as permissões
   const requestPermissions = async () => {
-    if (Platform.OS === 'web') return true; // web não precisa de permissão
+    if (Platform.OS === 'web') return true;
 
     const camera = await ImagePicker.requestCameraPermissionsAsync();
     const gallery = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -60,7 +70,6 @@ export default function Perfil() {
     return true;
   };
 
-  // Tirar a foto
   const takePhoto = async () => {
     if (Platform.OS === 'web') {
       Alert.alert('Indisponível', 'Câmera não funciona na web.');
@@ -82,7 +91,6 @@ export default function Perfil() {
     }
   };
 
-  // Escolher da galeria
   const pickFromGallery = async () => {
     if (Platform.OS === 'web') {
       const input = document.createElement('input');
@@ -113,13 +121,11 @@ export default function Perfil() {
     }
   };
 
-  // Upload das foto
   const uploadPhoto = async uri => {
     setUploadingPhoto(true);
     try {
       const formData = new FormData();
 
-      // Para web, precisa transformar em File mó chato isso
       if (Platform.OS === 'web') {
         const response = await fetch(uri);
         const blob = await response.blob();
@@ -150,7 +156,6 @@ export default function Perfil() {
     }
   };
 
-  // Logout
   const handleLogout = () => {
     Alert.alert('Sair da Conta', 'Tem certeza que deseja sair?', [
       { text: 'Cancelar', style: 'cancel' },
@@ -171,7 +176,6 @@ export default function Perfil() {
     ]);
   };
 
-  // Formata o valor como moeda
   const formatCurrency = value => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -179,7 +183,32 @@ export default function Perfil() {
     }).format(value || 0);
   };
 
+  const getImageUrl = () => {
+    if (!user?.foto_perfil) return null;
+
+    if (user.foto_perfil.startsWith('http')) {
+      return user.foto_perfil;
+    }
+
+    if (baseURL) {
+      const cleanBaseURL = baseURL.startsWith('http')
+        ? baseURL.replace('/api', '')
+        : `https://${baseURL.replace('/api', '')}`;
+      return `${cleanBaseURL}/storage/${user.foto_perfil}`;
+    }
+
+    if (api.defaults?.baseURL) {
+      const cleanBaseURL = api.defaults.baseURL.startsWith('http')
+        ? api.defaults.baseURL.replace('/api', '')
+        : `https://${api.defaults.baseURL.replace('/api', '')}`;
+      return `${cleanBaseURL}/storage/${user.foto_perfil}`;
+    }
+
+    return null;
+  };
+
   useEffect(() => {
+    loadApiUrl();
     loadUserData();
   }, []);
 
@@ -194,7 +223,6 @@ export default function Perfil() {
 
   return (
     <ScrollView style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <Pressable
           style={styles.backButton}
@@ -206,16 +234,15 @@ export default function Perfil() {
         <View style={styles.placeholder} />
       </View>
 
-      {/* Foto de Perfil */}
       <View style={styles.photoContainer}>
         {user?.foto_perfil ? (
           <Image
-            source={{
-              uri: `${api.defaults.baseURL.replace('/api', '')}/storage/${
-                user.foto_perfil
-              }`,
-            }}
+            source={{ uri: getImageUrl() }}
             style={styles.profilePhoto}
+            onError={e => {
+              console.log('Erro ao carregar imagem:', e.nativeEvent.error);
+              console.log('URL tentada:', getImageUrl());
+            }}
           />
         ) : (
           <View style={styles.photoPlaceholder}>
@@ -248,7 +275,6 @@ export default function Perfil() {
         )}
       </View>
 
-      {/* Informações do Usuário: Nome, Email e Saldo */}
       <View style={styles.infoContainer}>
         <View style={styles.infoItem}>
           <Text style={styles.infoLabel}>Nome:</Text>
@@ -266,12 +292,8 @@ export default function Perfil() {
         </View>
       </View>
 
-      {/* Botão de Logout */}
       <View style={styles.logoutContainer}>
-        <Pressable
-          style={styles.logoutButton}
-          onPress={() => navigation.navigate('Login')}
-        >
+        <Pressable style={styles.logoutButton} onPress={handleLogout}>
           <Text style={styles.logoutButtonText}>Sair da Conta</Text>
         </Pressable>
       </View>
