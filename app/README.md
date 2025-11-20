@@ -1,251 +1,234 @@
-# Banco Inter App - React Native Frontend
+# Projeto Banco Inter (Full Stack)
 
-Este é o frontend do aplicativo Banco Inter, desenvolvido em React Native com Expo, que se conecta à API Laravel para gestão financeira pessoal.
+Este é um projeto de estudos full stack que simula funcionalidades básicas do aplicativo do Banco Inter, desenvolvido com um frontend em **React Native (Expo)** e um backend em **PHP (Laravel)**.
 
-## 🚀 Funcionalidades
+O repositório está organizado como um monorepo, contendo as duas partes do projeto:
 
-- **Autenticação completa** (login, cadastro, logout)
-- **Gestão de transações** (adicionar, visualizar, remover)
-- **Upload de foto de perfil** (câmera ou galeria)
-- **Interface responsiva** com design do Banco Inter
-- **Navegação intuitiva** entre telas
-- **Atualização automática de saldo**
-- **Pull-to-refresh** nas listas
+- `./app/`: O código-fonte do aplicativo mobile (frontend).
+- `./api/`: O código-fonte da API RESTful (backend).
 
-## 📋 Pré-requisitos
+---
 
-- Node.js 18 ou superior
-- npm ou yarn
-- Expo CLI (`npm install -g @expo/cli`)
-- Dispositivo físico com Expo Go ou emulador
+## ⚠️ AVISOS IMPORTANTES
 
-## 🔧 Instalação
+- **O app não funciona mais via web** (`npx expo start --web`) devido à implementação do mapa
+- **Não é possível testar pelo Expo Go** - apenas através de build nativa
+- **É necessário usar ngrok** para expor a API localmente para o app
 
-### 1. Clone o repositório
+---
+
+## 🔧 Guia de Instalação e Uso
+
+### 1. Pré-requisitos
+
+Garanta que os seguintes programas estão instalados e funcionando:
+
+- **Git:** [Link para download](https://git-scm.com/downloads)
+- **XAMPP:** Essencial para o banco de dados e servidor web. [Link para download](https://www.apachefriends.org/index.html)
+- **Composer:** [Link para download](https://getcomposer.org/download/)
+- **Node.js (v18+):** [Link para download](https://nodejs.org/en/)
+- **Expo CLI:** `npm install -g @expo/cli`
+- **VS Code:** [Link para download](https://code.visualstudio.com/)
+- **Ngrok:** [Download aqui](https://ngrok.com/download) - necessário para expor a API local
+
+### 2. Instalação Automatizada (Apenas na Primeira Vez)
+
+Este script clona o projeto, instala as dependências, configura o ambiente e inicia todos os servidores e painéis necessários.
+
+**Instruções:**
+
+1.  Abra o **XAMPP Control Panel** e inicie os módulos **Apache** e **MySQL**.
+2.  Abra o **VS Code**, vá em `File > Open Folder...` e escolha uma **pasta vazia** para o projeto.
+3.  Abra o terminal integrado no VS Code (`Ctrl + '`).
+4.  **Copie o bloco de código abaixo, cole no terminal e pressione Enter.**
+
+```powershell
+git clone https://github.com/Danilo-RC/PAM.git .;
+npm install;
+composer install --working-dir=api;
+cd app; npm install; cd ..;
+cp "api\.env.xampp" "api\.env";
+php api/artisan key:generate;
+php api/artisan storage:link;
+php api/artisan migrate --force;
+Start-Process powershell -ArgumentList "Write-Host 'Servidor da API (Backend) rodando...'; php api/artisan serve --host=0.0.0.0 --port=8000";
+Start-Process "http://localhost/phpmyadmin";
+```
+
+### 3. Configuração do Ngrok
+
+⚠️ **IMPORTANTE:** Configure o token do ngrok antes de prosseguir!
+
+1. **Crie uma conta no [ngrok](https://ngrok.com/)**
+2. **Copie seu token de autenticação** do dashboard
+3. **Execute no terminal:** `ngrok config add-authtoken SEU_TOKEN_AQUI`
+
+### 4. Uso Diário (Iniciar e Parar o Projeto)
+
+#### Para INICIAR o ambiente:
+
+_Inicia os servidores da API, do Ngrok e abre o phpMyAdmin._
+
+```powershell
+# Iniciar servidor da API
+Start-Process powershell -ArgumentList "Write-Host 'Servidor da API (Backend) rodando...'; php api/artisan serve --host=0.0.0.0 --port=8000";
+
+# Iniciar Ngrok na porta 8000
+Start-Process powershell -ArgumentList "Write-Host 'Ngrok rodando...'; ngrok http 8000";
+
+# Abrir phpMyAdmin
+Start-Process "http://localhost/phpmyadmin";
+```
+
+#### Para PARAR todos os servidores:
+
+_Fecha todos os processos do PHP e Node.js iniciados pelo VS Code._
+
+```powershell
+Get-Process -Name "php", "node", "ngrok" | Stop-Process -Force -ErrorAction SilentlyContinue;
+Write-Host "Servidores finalizados." -ForegroundColor Yellow;
+```
+
+### 5. Configuração do App Mobile
+
+1. Após iniciar o ngrok, **copie a URL gerada** (ex: `https://strainlessly-polyhydric-kizzy.ngrok-free.dev`)
+2. No app, na **tela de login**, clique na **engrenagem ⚙️** no canto superior direito
+3. No campo URL, **cole apenas a parte do domínio** (ex: `strainlessly-polyhydric-kizzy.ngrok-free.dev`)
+   - O app automaticamente adiciona `https://` no início e `/api` no final
+4. Clique em **"Salvar"**
+5. Agora faça login ou cadastro normalmente
+
+---
+
+## 📱 Executando o Aplicativo
+
+### Opção 1: Expo Run Android (Desenvolvimento)
+
+#### Pré-requisitos:
+
+- **Android Studio:** [Download aqui](https://developer.android.com/studio)
+- **JDK 17 (Recomendado):** [Download OpenJDK 17](https://adoptium.net/temurin/releases/?version=17)
+  - ⚠️ **Use a versão 17 do JDK** - versões mais recentes podem ter problemas
+  - Verifique a instalação com: `java -version`
+  - Deve mostrar: `openjdk version "17.x.x"`
+
+#### Configuração do local.properties:
+
+1. Navegue até a pasta `app/android`
+2. Crie um arquivo chamado `local.properties`
+3. Adicione a linha com o caminho do seu SDK:
+   ```properties
+   sdk.dir = C:\\Users\\SEU_USUARIO\\AppData\\Local\\Android\\Sdk
+   ```
+   _Substitua pelo caminho real do SDK na sua máquina_
+
+#### Executar:
+
 ```bash
-git clone https://github.com/Danilo-RC/banco-inter-app.git
-cd banco-inter-app
+cd app
+npx expo run:android
 ```
 
-### 2. Instale as dependências
+### Opção 2: EAS Build (Builds Nativas)
+
+#### Build de Desenvolvimento:
+
 ```bash
-npm install
+cd app
+# Configure o EAS (primeira vez)
+npx eas build:configure
+
+# Build para desenvolvimento
+npx eas build --platform android --profile development
 ```
 
-### 3. Configure a API
-Edite o arquivo `src/api/index.js` e ajuste a `baseURL`:
+#### Build para APK:
 
-```javascript
-// Para desenvolvimento local (web)
-baseURL: 'http://localhost:8000/api'
-
-// Para dispositivo físico (substitua pelo IP da sua máquina)
-baseURL: 'http://SEU_IP:8000/api'  // Ex: 'http://192.168.1.100:8000/api'
-```
-
-Para descobrir seu IP:
-- Windows: `ipconfig`
-- Mac/Linux: `ifconfig` ou `ip a`
-
-### 4. Inicie o aplicativo
-
-#### Para Web (navegador)
 ```bash
-npm run web
+cd app
+npx eas build --platform android --profile apk
 ```
 
-#### Para dispositivo móvel
-```bash
-npm start
-```
-Escaneie o QR Code com o app Expo Go no seu celular.
+#### Instalar o Build:
 
-#### Para emuladores
-```bash
-npm run android  # Android
-npm run ios      # iOS (apenas no macOS)
-```
+1. Após o build concluir, escaneie o QR code gerado
+2. Ou baixe o APK pelo link fornecido
+3. Instale no dispositivo Android
 
-## 📱 Estrutura do Projeto
-
-```
-src/
-├── api/
-│   └── index.js              # Configuração do Axios
-├── pages/
-│   ├── Login/
-│   │   ├── index.js          # Tela de Login
-│   │   └── style.js          # Estilos da tela
-│   ├── Cadastro/
-│   │   ├── index.js          # Tela de Cadastro
-│   │   └── style.js          # Estilos da tela
-│   ├── Home/
-│   │   ├── index.js          # Tela principal
-│   │   └── style.js          # Estilos da tela
-│   └── Perfil/
-│       ├── index.js          # Tela de perfil
-│       └── style.js          # Estilos da tela
-└── components/
-    └── TransactionModal.js   # Modal para criar transações
-```
+---
 
 ## 🎨 Design System
 
 ### Cores
-- **Primária**: #FF7A00 (Laranja Banco Inter)
-- **Secundária**: #000000 (Preto)
-- **Background**: #F5F5F5 (Cinza claro)
-- **Texto**: #333333 (Cinza escuro)
-- **Sucesso**: #28a745 (Verde)
-- **Erro**: #dc3545 (Vermelho)
+
+- **Primária**: `#FF7A00` (Laranja Banco Inter)
+- **Secundária**: `#000000` (Preto)
+- **Background**: `#F5F5F5` (Cinza claro)
+- **Texto**: `#333333` (Cinza escuro)
+- **Sucesso**: `#28a745` (Verde)
+- **Erro**: `#dc3545` (Vermelho)
 
 ### Componentes
-- **FAB (Floating Action Button)**: Botão laranja no canto inferior direito
-- **Cards**: Elementos com sombra e bordas arredondadas
-- **Modal**: Overlay para criação de transações
-- **Headers**: Fundo laranja com texto branco
 
-## 🔧 Funcionalidades Detalhadas
+- **FAB (Floating Action Button)**: Botão laranja no canto inferior direito para ações principais.
+- **Cards**: Elementos de interface com sombra e bordas arredondadas para agrupar informações.
+- **Modal**: Overlay que surge sobre a tela para ações focadas, como a criação de transações.
+- **Headers**: Cabeçalhos padronizados com fundo laranja e texto branco.
 
-### Tela de Login
-- Validação de campos obrigatórios
-- Integração com API de autenticação
-- Armazenamento seguro do token
-- Loading state durante requisição
-- Navegação para cadastro
+---
 
-### Tela de Cadastro
-- Validação de email e senha
-- Confirmação de senha
-- Validação de campos obrigatórios
-- Integração com API de registro
-- Navegação de volta ao login
+## 🚀 Funcionalidades Principais
 
-### Tela Home
-- Exibição do saldo atual
-- Lista de transações recentes
-- FAB para adicionar transações
-- Pull-to-refresh para atualizar dados
-- Navegação para perfil
-- Long press para remover transações
+| Frontend (App)                                       | Backend (API)                                  |
+| :--------------------------------------------------- | :--------------------------------------------- |
+| ✅ Autenticação completa (Login, Cadastro)           | ✅ API RESTful com endpoints seguros           |
+| ✅ Gestão de transações (Adicionar, Listar, Remover) | ✅ Autenticação via token com Laravel Sanctum  |
+| ✅ Upload de foto de perfil (Câmera/Galeria)         | ✅ Gestão de usuários e transações no DB       |
+| ✅ Atualização de saldo em tempo real                | ✅ Validação de dados de entrada               |
+| ✅ Interface inspirada no design do Banco Inter      | ✅ Cálculo e atualização de saldo automático   |
+| ✅ Navegação intuitiva e pull-to-refresh             | ✅ Armazenamento de arquivos (fotos de perfil) |
+| ✅ Integração com mapa                               | ✅ CORS configurado para ngrok                 |
 
-### Tela de Perfil
-- Exibição de dados do usuário
-- Upload de foto (câmera/galeria)
-- Informações de saldo e data de registro
-- Botão de logout
-- Navegação de volta
+---
 
-### Modal de Transações
-- Seleção de tipo (entrada/saída)
-- Campo de valor com formatação monetária
-- Campo de descrição
-- Validação de dados
-- Integração com API
+## 📚 Endpoints da API
 
-## 🔒 Autenticação
+Todas as rotas são prefixadas com `/api`. A autenticação (`Authorization: Bearer <token>`) é necessária para a maioria delas.
 
-O aplicativo utiliza autenticação baseada em tokens:
+| Método   | Endpoint             | Descrição                                           |
+| :------- | :------------------- | :-------------------------------------------------- |
+| `POST`   | `/register`          | Registra um novo usuário.                           |
+| `POST`   | `/login`             | Autentica um usuário e retorna um token.            |
+| `POST`   | `/logout`            | Invalida o token do usuário (requer auth).          |
+| `GET`    | `/user`              | Retorna os dados do usuário logado (requer auth).   |
+| `POST`   | `/profile/photo`     | Faz upload da foto de perfil (requer auth).         |
+| `GET`    | `/transactions`      | Lista todas as transações do usuário (requer auth). |
+| `POST`   | `/transactions`      | Cria uma nova transação (requer auth).              |
+| `DELETE` | `/transactions/{id}` | Remove uma transação específica (requer auth).      |
 
-1. **Login**: Usuário insere credenciais e recebe um token
-2. **Armazenamento**: Token é salvo no AsyncStorage
-3. **Interceptor**: Axios adiciona automaticamente o token nas requisições
-4. **Logout**: Token é removido e usuário redirecionado
+---
 
-## 📝 Dependências Principais
+## 🐛 Troubleshooting Comum
 
-```json
-{
-  "@react-native-async-storage/async-storage": "^2.1.2",
-  "@react-navigation/native": "^7.0.19",
-  "@react-navigation/native-stack": "^7.3.3",
-  "axios": "^1.9.0",
-  "expo": "~52.0.41",
-  "expo-image-picker": "latest",
-  "react": "18.3.1",
-  "react-native": "0.76.7"
-}
-```
+- **Erro de conexão com a API no App?**
+  1.  Verifique se o servidor da API (`php artisan serve`) está rodando na porta 8000.
+  2.  Confirme se o ngrok está rodando e a URL está correta.
+  3.  No app, use apenas a parte do domínio do ngrok (sem `https://` e sem `/api`).
+  4.  Certifique-se de que configurou o token do ngrok.
 
-## 🛠️ Desenvolvimento
+- **Problemas com `npx expo run:android`?**
+  1.  Verifique se o arquivo `local.properties` existe em `app/android/`
+  2.  Confirme se o caminho do SDK está correto
+  3.  **Use JDK 17** - versões mais recentes podem causar problemas
+  4.  Execute `npx expo install` para garantir todas as dependências
 
-### Comandos úteis
-```bash
-# Limpar cache do Expo
-npx expo start --clear
+- **API não conecta ao banco de dados?**
+  1.  Verifique se o MySQL está ativo no XAMPP.
+  2.  Confirme se o nome do banco de dados (`banco_inter`) e as credenciais no arquivo `api/.env` estão corretos.
 
-# Reinstalar dependências
-rm -rf node_modules && npm install
-
-# Verificar logs
-# Os logs aparecem no terminal onde você executou npm start
-```
-
-### Debugging
-- **Console.log**: Use para debug no desenvolvimento
-- **Expo DevTools**: Pressione `j` no terminal para abrir
-- **React DevTools**: Disponível no navegador quando rodando na web
-- **Network**: Verifique requisições na aba Network do navegador
-
-### Estrutura de Estilos
-Cada tela tem seu próprio arquivo `style.js` com StyleSheet do React Native:
-
-```javascript
-import { StyleSheet } from 'react-native';
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  // ... outros estilos
-});
-
-export default styles;
-```
-
-## 🐛 Troubleshooting
-
-### Erro de conexão com API
-- Verifique se o backend Laravel está rodando
-- Confirme o IP/URL no arquivo `src/api/index.js`
-- Teste a API diretamente no navegador ou Postman
-
-### Erro de permissões (câmera/galeria)
-- Verifique se as permissões foram concedidas no dispositivo
-- Reinstale o app se necessário
-
-### Erro de navegação
-- Verifique se todas as telas estão importadas corretamente no `App.js`
-- Confirme os nomes das rotas
-
-### App não carrega no dispositivo
-- Verifique se o dispositivo está na mesma rede Wi-Fi
-- Confirme se o firewall não está bloqueando a conexão
-- Tente reiniciar o servidor Expo
-
-## 📱 Testando o Aplicativo
-
-### No navegador (Web)
-1. Execute `npm run web`
-2. Acesse `http://localhost:8081`
-3. Teste todas as funcionalidades
-
-### No dispositivo físico
-1. Instale o Expo Go na Play Store/App Store
-2. Execute `npm start`
-3. Escaneie o QR Code
-4. Teste em ambiente real
-
-### Fluxo de teste recomendado
-1. Cadastre um novo usuário
-2. Faça login
-3. Adicione algumas transações (entrada e saída)
-4. Verifique se o saldo atualiza
-5. Teste o upload de foto
-6. Teste o logout
+- **Upload de foto não funciona?**
+  1.  Verifique se você executou o comando `php artisan storage:link` (o script automático já faz isso). Se a pasta `public/storage` não existir dentro de `api/`, rode o comando manualmente.
 
 ## 📄 Licença
 
-Este projeto foi desenvolvido para fins educacionais e demonstrativos.
-
+Este projeto foi desenvolvido para fins educacionais e serve como um portfólio de habilidades em desenvolvimento full stack.
