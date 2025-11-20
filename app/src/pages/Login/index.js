@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // Adicione useEffect aqui
 import {
   View,
   Text,
@@ -31,24 +31,22 @@ export default function Login() {
     }
   };
 
+  // Agora useEffect está importado e funcionará corretamente
   useEffect(() => {
     loadApiUrl();
   }, []);
 
+  // ... resto do código permanece igual
   const handleSaveApiUrl = async () => {
     if (!apiUrl) {
       Alert.alert('Erro', 'O campo da URL não pode estar vazio.');
       return;
     }
 
-    // Normalização da URL (garantir que termine com /api)
     let normalizedUrl = apiUrl.trim();
     if (normalizedUrl.endsWith('/')) {
       normalizedUrl = normalizedUrl.slice(0, -1);
     }
-    // O interceptor já garante o /api, mas vamos salvar a URL base
-    // para que o usuário veja o que digitou.
-    // O interceptor cuidará da lógica de prefixo https:// e sufixo /api.
 
     await AsyncStorage.setItem('url_api', normalizedUrl);
     setCurrentApiUrl(normalizedUrl);
@@ -74,12 +72,10 @@ export default function Login() {
       });
 
       if (response.status === 200) {
-        // Salva o token no AsyncStorage
         await AsyncStorage.setItem('userToken', response.data.token);
 
         Alert.alert('Sucesso', 'Login realizado com sucesso!');
 
-        // Navega para Home com dados do usuário
         navigation.replace('Main', {
           user: response.data.user,
         });
