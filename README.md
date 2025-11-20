@@ -9,6 +9,14 @@ O repositório está organizado como um monorepo, contendo as duas partes do pro
 
 ---
 
+## ⚠️ AVISOS IMPORTANTES
+
+- **O app não funciona mais via web** (`npx expo start --web`) devido à implementação do mapa
+- **Não é possível testar pelo Expo Go** - apenas através de build nativa
+- **É necessário usar ngrok** para expor a API localmente para o app
+
+---
+
 ## 🔧 Guia de Instalação e Uso
 
 ### 1. Pré-requisitos
@@ -21,6 +29,7 @@ Garanta que os seguintes programas estão instalados e funcionando:
 - **Node.js (v18+):** [Link para download](https://nodejs.org/en/)
 - **Expo CLI:** `npm install -g @expo/cli`
 - **VS Code:** [Link para download](https://code.visualstudio.com/)
+- **Ngrok:** [Download aqui](https://ngrok.com/download) - necessário para expor a API local
 
 ### 2. Instalação Automatizada (Apenas na Primeira Vez)
 
@@ -43,21 +52,31 @@ php api/artisan key:generate;
 php api/artisan storage:link;
 php api/artisan migrate --force;
 Start-Process powershell -ArgumentList "Write-Host 'Servidor da API (Backend) rodando...'; php api/artisan serve --host=0.0.0.0 --port=8000";
-Start-Process powershell -ArgumentList "Write-Host 'Servidor do App (Frontend - Web e Mobile) rodando...'; cd app; npx expo start --web";
 Start-Process "http://localhost/phpmyadmin";
 ```
 
-### 3. Uso Diário (Iniciar e Parar o Projeto)
+### 3. Configuração do Ngrok
 
-Após a primeira instalação, use os comandos abaixo para gerenciar o ambiente de desenvolvimento.
+⚠️ **IMPORTANTE:** Configure o token do ngrok antes de prosseguir!
+
+1. **Crie uma conta no [ngrok](https://ngrok.com/)**
+2. **Copie seu token de autenticação** do dashboard
+3. **Execute no terminal:** `ngrok config add-authtoken SEU_TOKEN_AQUI`
+
+### 4. Uso Diário (Iniciar e Parar o Projeto)
 
 #### Para INICIAR o ambiente:
 
-_Inicia os servidores da API, do App e abre o phpMyAdmin._
+_Inicia os servidores da API, do Ngrok e abre o phpMyAdmin._
 
 ```powershell
+# Iniciar servidor da API
 Start-Process powershell -ArgumentList "Write-Host 'Servidor da API (Backend) rodando...'; php api/artisan serve --host=0.0.0.0 --port=8000";
-Start-Process powershell -ArgumentList "Write-Host 'Servidor do App (Frontend - Web e Mobile) rodando...'; cd app; npx expo start --web";
+
+# Iniciar Ngrok na porta 8000
+Start-Process powershell -ArgumentList "Write-Host 'Ngrok rodando...'; ngrok http 8000";
+
+# Abrir phpMyAdmin
 Start-Process "http://localhost/phpmyadmin";
 ```
 
@@ -66,50 +85,69 @@ Start-Process "http://localhost/phpmyadmin";
 _Fecha todos os processos do PHP e Node.js iniciados pelo VS Code._
 
 ```powershell
-Get-Process -Name "php", "node" | Stop-Process -Force -ErrorAction SilentlyContinue;
+Get-Process -Name "php", "node", "ngrok" | Stop-Process -Force -ErrorAction SilentlyContinue;
 Write-Host "Servidores finalizados." -ForegroundColor Yellow;
 ```
 
-### 4. Ajuste Final: Conectar o App à API
+### 5. Configuração do App Mobile
 
-1.  No VS Code, abra o arquivo `app/src/api/index.js`.
-2.  Encontre a linha `baseURL` e **substitua 'SEU_IP_DE_REDE' pelo IP da sua máquina**.
-
-    ```javascript
-    // Exemplo: 'http://192.168.1.100:8000/api'
-    baseURL: 'http://SEU_IP_DE_REDE:8000/api';
-    ```
-
-    > **Dica:** Para descobrir seu IP, rode o comando `ipconfig` no terminal do Windows.
+1. Após iniciar o ngrok, **copie a URL gerada** (ex: `https://strainlessly-polyhydric-kizzy.ngrok-free.dev`)
+2. No app, na **tela de login**, clique na **engrenagem ⚙️** no canto superior direito
+3. No campo URL, **cole apenas a parte do domínio** (ex: `strainlessly-polyhydric-kizzy.ngrok-free.dev`)
+   - O app automaticamente adiciona `https://` no início e `/api` no final
+4. Clique em **"Salvar"**
+5. Agora faça login ou cadastro normalmente
 
 ---
 
-## 📱 Testando o Aplicativo
+## 📱 Executando o Aplicativo
 
-Após a instalação, siga os passos abaixo para testar as funcionalidades.
+### Opção 1: Expo Run Android (Desenvolvimento)
 
-### No navegador (Web)
+#### Pré-requisitos:
+- **Android Studio:** [Download aqui](https://developer.android.com/studio)
+- **JDK 17 (Recomendado):** [Download OpenJDK 17](https://adoptium.net/temurin/releases/?version=17)
+  - ⚠️ **Use a versão 17 do JDK** - versões mais recentes podem ter problemas
+  - Verifique a instalação com: `java -version`
+  - Deve mostrar: `openjdk version "17.x.x"`
 
-1.  O script de instalação/uso diário já inicia o servidor web.
-2.  Acesse `http://localhost:8081` (ou a porta indicada no terminal do Expo).
-3.  Teste as funcionalidades de login, cadastro e visualização de transações.
+#### Configuração do local.properties:
+1. Navegue até a pasta `app/android`
+2. Crie um arquivo chamado `local.properties`
+3. Adicione a linha com o caminho do seu SDK:
+   ```properties
+   sdk.dir = C:\\Users\\SEU_USUARIO\\AppData\\Local\\Android\\Sdk
+   ```
+   *Substitua pelo caminho real do SDK na sua máquina*
 
-### No dispositivo físico (Recomendado)
+#### Executar:
+```bash
+cd app
+npx expo run:android
+```
 
-1.  Instale o app **Expo Go** pela Play Store ou App Store.
-2.  Garanta que o celular e o computador estejam na **mesma rede Wi-Fi**.
-3.  No terminal do Expo (iniciado pelo script), escaneie o **QR Code** com o app Expo Go.
-4.  O aplicativo irá carregar e você poderá testá-lo em um ambiente real.
+### Opção 2: EAS Build (Builds Nativas)
 
-### Fluxo de teste recomendado
+#### Build de Desenvolvimento:
+```bash
+cd app
+# Configure o EAS (primeira vez)
+npx eas build:configure
 
-1.  **Cadastro:** Crie um novo usuário.
-2.  **Login:** Faça login com as credenciais recém-criadas.
-3.  **Adicionar Transações:** Adicione algumas transações de entrada e saída usando o botão (+).
-4.  **Verificar Saldo:** Confirme se o saldo na tela Home é atualizado corretamente.
-5.  **Atualizar Dados:** Puxe a lista de transações para baixo (pull-to-refresh) para recarregar os dados.
-6.  **Upload de Foto:** Vá para a tela de Perfil e teste o upload de uma nova foto de perfil.
-7.  **Logout:** Na tela de Perfil, clique em "Sair" para testar o encerramento da sessão.
+# Build para desenvolvimento
+npx eas build --platform android --profile development
+```
+
+#### Build de Produção:
+```bash
+cd app
+npx eas build --platform android --profile production
+```
+
+#### Instalar o Build:
+1. Após o build concluir, escaneie o QR code gerado
+2. Ou baixe o APK pelo link fornecido
+3. Instale no dispositivo Android
 
 ---
 
@@ -143,6 +181,7 @@ Após a instalação, siga os passos abaixo para testar as funcionalidades.
 | ✅ Atualização de saldo em tempo real                | ✅ Validação de dados de entrada               |
 | ✅ Interface inspirada no design do Banco Inter      | ✅ Cálculo e atualização de saldo automático   |
 | ✅ Navegação intuitiva e pull-to-refresh             | ✅ Armazenamento de arquivos (fotos de perfil) |
+| ✅ Integração com mapa                               | ✅ CORS configurado para ngrok                 |
 
 ---
 
@@ -166,10 +205,16 @@ Todas as rotas são prefixadas com `/api`. A autenticação (`Authorization: Bea
 ## 🐛 Troubleshooting Comum
 
 - **Erro de conexão com a API no App?**
-  1.  Verifique se o servidor da API (`php artisan serve`) está rodando. O parâmetro `--host=0.0.0.0` é essencial para permitir conexões da rede local.
-  2.  Confirme se o IP no arquivo `app/src/api/index.js` está correto (não use `localhost`!).
-  3.  Certifique-se de que seu celular e computador estão na mesma rede Wi-Fi.
-  4.  Desative temporariamente o Firewall do Windows para testar se ele está bloqueando a porta `8000`.
+  1.  Verifique se o servidor da API (`php artisan serve`) está rodando na porta 8000.
+  2.  Confirme se o ngrok está rodando e a URL está correta.
+  3.  No app, use apenas a parte do domínio do ngrok (sem `https://` e sem `/api`).
+  4.  Certifique-se de que configurou o token do ngrok.
+
+- **Problemas com `npx expo run:android`?**
+  1.  Verifique se o arquivo `local.properties` existe em `app/android/`
+  2.  Confirme se o caminho do SDK está correto
+  3.  **Use JDK 17** - versões mais recentes podem causar problemas
+  4.  Execute `npx expo install` para garantir todas as dependências
 
 - **API não conecta ao banco de dados?**
   1.  Verifique se o MySQL está ativo no XAMPP.
