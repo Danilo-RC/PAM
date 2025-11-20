@@ -3,24 +3,39 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Configuração da API para IP local com XAMPP
 const api = axios.create({
-  // da pra colocar no celular se estiver na mesma rede e com o IP da máquina mas coloque o comando no laravel: php artisan serve --host=0.0.0.0 --port=8000
-  baseURL: 'http://192.168.15.14:8000/api', //está configurado para o ip do meu pc (Danilo) mas coloque o IP da sua máquina
+  // A baseURL será definida dinamicamente pelo interceptor
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Interceptor para adicionar o token automaticamente
+// Interceptor para adicionar a baseURL dinâmica e o token
 api.interceptors.request.use(
   async config => {
     try {
+      const urlApi = await AsyncStorage.getItem('url_api');
+      if (urlApi) {
+        // Normaliza a URL: garante que comece com https:// e termine com /api
+        let normalizedUrl = urlApi.trim();
+        if (!normalizedUrl.startsWith('https://')) {
+          normalizedUrl = 'https://' + normalizedUrl;
+        }
+        if (normalizedUrl.endsWith('/')) {
+          normalizedUrl = normalizedUrl.slice(0, -1);
+        }
+        if (!normalizedUrl.endsWith('/api')) {
+          normalizedUrl = normalizedUrl + '/api';
+        }
+        config.baseURL = normalizedUrl;
+      }
+
       const token = await AsyncStorage.getItem('userToken');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
     } catch (error) {
-      console.error('Erro ao obter token:', error);
+      console.error('Erro no interceptor de requisição:', error);
     }
     return config;
   },
